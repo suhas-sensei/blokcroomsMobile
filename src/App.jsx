@@ -37,6 +37,7 @@ const App = () => {
   const [showJoinPage, setShowJoinPage] = useState(false);
   const [showWarning, setShowWarning] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
+  const [entityActive, setEntityActive] = useState(false);
   const [mobileMovement, setMobileMovement] = useState({ x: 0, y: 0 });
 
   const entityRef = useRef();
@@ -64,11 +65,15 @@ const App = () => {
     setShowJoinPage(true);
   };
 
-  const handleWarningAccept = () => {
-    setShowWarning(false);
-    setGameStarted(true);
-  };
+const handleWarningAccept = () => {
+  setShowWarning(false);
+  setGameStarted(true);
+  
 
+  setTimeout(() => {
+    setEntityActive(true);
+  }, 3500);
+};
   const handleJoystickMove = movement => {
     setMobileMovement(movement);
   };
@@ -169,11 +174,16 @@ const App = () => {
 
         {!mobile && <PointerLockControls />}
         {mobile && <MobileTouchControls gameOver={gameOver} />}
-
-        <FirstPersonControls onPositionUpdate={handlePositionUpdate} gameOver={gameOver} mobileMovement={mobileMovement} />
-        <Model />
-        <Gun isVisible={showGun} onShoot={handleShootWithRef} />
-
+<FirstPersonControls onPositionUpdate={handlePositionUpdate} gameOver={gameOver} mobileMovement={mobileMovement} />
+<Model />
+<Gun isVisible={showGun} onShoot={handleShootWithRef} />
+{entityActive && (
+  <Entity 
+    playerPosition={playerPosition} 
+    onCatch={handleEntityCatch} 
+    onDistanceUpdate={handleDistanceUpdate} 
+  />
+)}
         {bloodEffects.map(effect => (
           <BloodEffect key={effect.id} position={effect.position} onComplete={() => removeBloodEffect(effect.id)} />
         ))}

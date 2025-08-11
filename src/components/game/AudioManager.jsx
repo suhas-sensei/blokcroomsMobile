@@ -118,128 +118,119 @@ function AudioManager({ entityDistance, gameOver, onAudioStop }) {
     };
   }, [hasInteracted]);
 
-  // Handle game over - stop all audio and play death sound sequence
-  useEffect(() => {
-    if (gameOver) {
-      // Stop all existing audio immediately
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        setIsPlaying(false);
+// Handle game over - stop all audio and play death sound sequence
+useEffect(() => {
+  if (gameOver) {
+    // Stop all existing audio immediately
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+    if (breathRef.current) {
+      breathRef.current.pause();
+      breathRef.current.currentTime = 0;
+    }
+
+    // Create a NEW death sound instance to avoid interference
+    const deathAudio = new Audio("/ded.mp3");
+    deathAudio.volume = 1.0;
+    deathAudio.currentTime = 0;
+
+    const playDeathSound = async () => {
+      try {
+        await deathAudio.play();
+        console.log("Death sound started playing");
+      } catch (error) {
+        console.log("Failed to play death sound:", error);
       }
+    };
+
+    playDeathSound();
+
+    // Stop death sound after 3 seconds
+    const deathSoundTimeout = setTimeout(() => {
+      deathAudio.pause();
+      deathAudio.currentTime = 0;
+      console.log("Death sound stopped after 3 seconds");
+    }, 3000);
+
+    // Start breathing sound after 2 seconds
+    const breathStartTimeout = setTimeout(() => {
+      if (breathRef.current) {
+        breathRef.current.currentTime = 0;
+        breathRef.current.volume = 0.9;
+
+        const playBreathSound = async () => {
+          try {
+            await breathRef.current.play();
+            console.log("Breath sound started playing");
+          } catch (error) {
+            console.log("Failed to play breath sound:", error);
+          }
+        };
+
+        playBreathSound();
+      }
+    }, 2000);
+
+    // Stop ALL audio after 6 seconds
+    const allAudioStopTimeout = setTimeout(() => {
+      console.log("Stopping all audio after 6 seconds");
+      deathAudio.pause();
+      deathAudio.currentTime = 0;
+      
       if (breathRef.current) {
         breathRef.current.pause();
         breathRef.current.currentTime = 0;
       }
-
-      // Play death sound immediately
-      if (deathSoundRef.current) {
-        deathSoundRef.current.currentTime = 0;
-        deathSoundRef.current.volume = 1.0;
-
-        const playDeathSound = async () => {
-          try {
-            await deathSoundRef.current.play();
-            console.log("Death sound started playing");
-          } catch (error) {
-            console.log("Failed to play death sound:", error);
-          }
-        };
-
-        playDeathSound();
-
-        // Stop death sound after 3 seconds
-        const deathSoundTimeout = setTimeout(() => {
-          if (deathSoundRef.current) {
-            deathSoundRef.current.pause();
-            deathSoundRef.current.currentTime = 0;
-            console.log("Death sound stopped after 3 seconds");
-          }
-        }, 3000);
-
-        // Start breathing sound after 2 seconds
-        const breathStartTimeout = setTimeout(() => {
-          if (breathRef.current) {
-            breathRef.current.currentTime = 0;
-            breathRef.current.volume = 0.9;
-
-            const playBreathSound = async () => {
-              try {
-                await breathRef.current.play();
-                console.log("Breath sound started playing");
-              } catch (error) {
-                console.log("Failed to play breath sound:", error);
-              }
-            };
-
-            playBreathSound();
-          }
-        }, 2000);
-
-        // Stop ALL audio after 6 seconds
-        const allAudioStopTimeout = setTimeout(() => {
-          console.log("Stopping all audio after 6 seconds");
-          if (deathSoundRef.current) {
-            deathSoundRef.current.pause();
-            deathSoundRef.current.currentTime = 0;
-          }
-          if (breathRef.current) {
-            breathRef.current.pause();
-            breathRef.current.currentTime = 0;
-          }
-          if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-          }
-          console.log("All audio stopped - ready for join text");
-        }, 6000);
-
-        // Store timeouts for cleanup
-        deathSoundRef.current.timeout = deathSoundTimeout;
-        deathSoundRef.current.breathTimeout = breathStartTimeout;
-        deathSoundRef.current.allStopTimeout = allAudioStopTimeout;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
       }
+      console.log("All audio stopped - ready for join text");
+    }, 6000);
 
-      // Notify that audio has stopped
-      if (onAudioStop) {
-        onAudioStop();
-      }
+    // Store cleanup function
+    return () => {
+      clearTimeout(deathSoundTimeout);
+      clearTimeout(breathStartTimeout);
+      clearTimeout(allAudioStopTimeout);
+      deathAudio.pause();
+    };
+  }
+}, [gameOver, onAudioStop]);
+
+// Update audio volume based on entity distance (only if not game over)
+useEffect(() => {
+  if (!audioRef.current || !isPlaying || gameOver) return;
+
+  // Calculate volume based on entity distance
+  const maxDistance = 8;
+  const minDistance = 2;
+  const minVolume = 0.001;
+  const maxVolume = 0.8;
+
+  let volume = minVolume;
+
+  if (entityDistance !== null) {
+    if (entityDistance <= minDistance) {
+      volume = maxVolume;
+    } else if (entityDistance >= maxDistance) {
+      volume = minVolume;
+    } else {
+      const normalizedDistance = (entityDistance - minDistance) / (maxDistance - minDistance);
+      volume = maxVolume - normalizedDistance * (maxVolume - minVolume);
     }
-  }, [gameOver, onAudioStop]);
+  }
 
-  // Update audio volume based on entity distance (only if not game over)
-  useEffect(() => {
-    if (!audioRef.current || !isPlaying || gameOver) return;
+  // Smooth volume transition
+  const currentVolume = audioRef.current.volume;
+  const volumeDiff = volume - currentVolume;
+  const smoothingFactor = 0.1;
 
-    // Calculate volume based on entity distance
-    // When entity is far (distance > 20), volume is very low (0.05)
-    // When entity is close (distance < 5), volume is high (0.8)
-    const maxDistance = 8; // Maximum distance for volume calculation
-    const minDistance = 2; // Minimum distance for maximum volume
-    const minVolume = 0.001; // Minimum volume when entity is far
-    const maxVolume = 0.8; // Maximum volume when entity is close
-
-    let volume = minVolume;
-
-    if (entityDistance !== null) {
-      if (entityDistance <= minDistance) {
-        volume = maxVolume;
-      } else if (entityDistance >= maxDistance) {
-        volume = minVolume;
-      } else {
-        // Linear interpolation between min and max volume
-        const normalizedDistance = (entityDistance - minDistance) / (maxDistance - minDistance);
-        volume = maxVolume - normalizedDistance * (maxVolume - minVolume);
-      }
-    }
-
-    // Smooth volume transition
-    const currentVolume = audioRef.current.volume;
-    const volumeDiff = volume - currentVolume;
-    const smoothingFactor = 0.1; // Adjust for smoother/faster transitions
-
-    audioRef.current.volume = currentVolume + volumeDiff * smoothingFactor;
-  }, [entityDistance, isPlaying, gameOver]);
+  audioRef.current.volume = currentVolume + volumeDiff * smoothingFactor;
+}, [entityDistance, isPlaying, gameOver]);
 
   // Audio manager runs silently with no UI
   return null;

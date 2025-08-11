@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { supabase } from '../../lib/supabase'; 
 
 function Join() {
   const [username, setUsername] = useState("");
@@ -15,84 +16,83 @@ function Join() {
     }
   }, [inputDisabled]);
 
-  // Function to send data to SheetDB
-  const submitToSheetDB = async username => {
-    try {
-      const currentTime = new Date();
-      const formattedTime = currentTime.toLocaleString("en-US", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        hour12: true,
-      });
+// Function to send data to Supabase
+const submitToSupabase = async username => {
+  console.log("ENV URL:", import.meta.env.VITE_SUPABASE_URL);
+  console.log("ENV KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 30) + "...");
+  
+  // Try a simple test
+  const { data, error } = await supabase.from('waitlist').select('count');
+  console.log("Test query result:", { data, error });
+  try {
+    // Format current time in user's local timezone
+    const currentTime = new Date().toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZoneName: 'short'
+    });
+    
+    // Get total count for sl_no
+    const { count } = await supabase
+      .from('waitlist')
+      .select('*', { count: 'exact' });
 
-      // Generate serial number (timestamp-based to ensure uniqueness)
-      const serialNumber = Date.now();
+    // Insert data with sequential sl_no
+    const { data, error } = await supabase
+      .from('waitlist')
+      .insert({
 
-      const dataToSend = {
-        data: [
-          {
-            "sl.no": serialNumber,
-            "username": String(username),
-            "time": formattedTime,
-          },
-        ],
-      };
+        username: String(username),
+        joined_at: new Date().toISOString()
 
-      console.log("Sending this data to SheetDB:", dataToSend);
+      })
+      .select();
 
-      const response = await fetch("https://sheetdb.io/api/v1/e3qzzdsccl9j2", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Data saved successfully to SheetDB:", result);
-        setSubmitStatus("✅ Successfully added to waitlist!");
-        return true;
-      } else {
-        const errorData = await response.text();
-        console.error("Error saving data. Status:", response.status, "Response:", errorData);
-        setSubmitStatus("❌ Error adding to waitlist. Please try again.");
-        return false;
-      }
-    } catch (error) {
-      console.error("Error during fetch:", error);
-      setSubmitStatus("❌ Network error. Please check your connection.");
+    if (error) {
+      console.error("Error saving data to Supabase:", error);
+      setSubmitStatus("❌ Error adding to waitlist. Please try again.");
       return false;
     }
-  };
 
-  const handleKeyPress = async e => {
-    if (e.key === "Enter" && username.trim() && !isSubmitting) {
-      setIsSubmitting(true);
-      setInputDisabled(true);
-      setShowCursor(false);
-      setSubmitStatus("⏳ Adding to waitlist...");
+    console.log("Data saved successfully to Supabase:", data);
+    setSubmitStatus("✅ Successfully added to waitlist!");
+    return true;
 
-      // Submit to SheetDB
-      const success = await submitToSheetDB(username.trim());
+  } catch (error) {
+    console.error("Error during Supabase operation:", error);
+    setSubmitStatus("❌ Network error. Please check your connection.");
+    return false;
+  }
+};
 
-      if (success) {
-        // Show links after successful submission
-        setTimeout(() => {
-          setShowLinks(true);
-        }, 1000);
-      } else {
-        // Re-enable input on error
-        setInputDisabled(false);
-        setShowCursor(true);
-      }
+ const handleKeyPress = async e => {
+  if (e.key === "Enter" && username.trim() && !isSubmitting) {
+    setIsSubmitting(true);
+    setInputDisabled(true);
+    setShowCursor(false);
+    setSubmitStatus("⏳ Adding to waitlist...");
 
-      setIsSubmitting(false);
+    // Submit to Supabase (change this line)
+    const success = await submitToSupabase(username.trim());
+
+    if (success) {
+      // Show links after successful submission
+      setTimeout(() => {
+        setShowLinks(true);
+      }, 1000);
+    } else {
+      // Re-enable input on error
+      setInputDisabled(false);
+      setShowCursor(true);
     }
-  };
+
+    setIsSubmitting(false);
+  }
+};
 
   const handleFocus = () => {
     setShowCursor(false);
