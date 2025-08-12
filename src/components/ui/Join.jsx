@@ -116,12 +116,12 @@ const submitToSupabase = async username => {
       style={{
         width: "100%",
         height: "100vh",
-        padding: "20px",
+        padding: "15px", // Reduced padding
         backgroundColor: "#000",
         color: "#00ff00",
         fontFamily: "'Jersey 15', monospace",
-        fontSize: "30px",
-        lineHeight: "1.4",
+        fontSize: "18px", // Reduced from 30px
+        lineHeight: "1.3", // Tighter line height
         overflow: "hidden",
       }}
     >
@@ -141,8 +141,8 @@ const submitToSupabase = async username => {
 
           .cursor {
             display: inline-block;
-            width: 8px;
-            height: 16px;
+            width: 6px; /* Smaller cursor */
+            height: 12px; /* Smaller cursor */
             background-color: #00ff00;
             animation: blink 1s infinite;
           }
@@ -157,7 +157,7 @@ const submitToSupabase = async username => {
             border: none;
             color: #00ff00;
             font-family: 'Jersey 15', monospace;
-            font-size: 30px;
+            font-size: 18px; /* Reduced from 30px */
             outline: none;
             flex: 1;
           }
@@ -172,8 +172,8 @@ const submitToSupabase = async username => {
           }
 
           .status-message {
-            font-size: 20px;
-            margin-top: 10px;
+            font-size: 14px; /* Reduced from 20px */
+            margin-top: 8px;
             opacity: 0.8;
           }
 
@@ -188,10 +188,61 @@ const submitToSupabase = async username => {
           .loading-message {
             color: #ffff00;
           }
+
+          /* Mobile responsive adjustments */
+          @media (max-width: 768px) {
+            .terminal {
+              font-size: 14px !important;
+              padding: 10px !important;
+            }
+            
+            .terminal-input {
+              font-size: 14px !important;
+            }
+            
+            .ascii-art {
+              font-size: 8px !important;
+              line-height: 1.1 !important;
+            }
+            
+            .status-message {
+              font-size: 12px !important;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .terminal {
+              font-size: 12px !important;
+              padding: 8px !important;
+            }
+            
+            .terminal-input {
+              font-size: 12px !important;
+            }
+            
+            .ascii-art {
+              font-size: 6px !important;
+              line-height: 1.0 !important;
+            }
+            
+            .status-message {
+              font-size: 10px !important;
+            }
+          }
         `}
       </style>
 
-      <div style={{ marginBottom: "20px", whiteSpace: "pre" }}>
+      {/* ASCII Art with smaller size */}
+      <div 
+        className="ascii-art"
+        style={{ 
+          marginBottom: "15px", // Reduced margin
+          whiteSpace: "pre",
+          fontSize: "10px", // Much smaller ASCII art
+          lineHeight: "1.2",
+          overflow: "hidden"
+        }}
+      >
         {`██████╗░██╗░░░░░░█████╗░░█████╗░██╗░░██╗██████╗░░█████╗░░█████╗░███╗░░░███╗░██████╗
 ██╔══██╗██║░░░░░██╔══██╗██╔══██╗██║░██╔╝██╔══██╗██╔══██╗██╔══██╗████╗░████║██╔════╝
 ██████╦╝██║░░░░░██║░░██║██║░░╚═╝█████═╝░██████╔╝██║░░██║██║░░██║██╔████╔██║╚█████╗░
@@ -200,8 +251,10 @@ const submitToSupabase = async username => {
 ╚═════╝░╚══════╝░╚════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚═════╝░`}
       </div>
 
-      <div style={{ marginTop: "30px" }}>
-        <div>Enter your Discord Username to join the waitlist</div>
+      <div style={{ marginTop: "20px" }}> {/* Reduced margin */}
+        <div style={{ fontSize: "16px", marginBottom: "8px" }}> {/* Smaller instruction text */}
+          Enter your Discord Username to join the waitlist
+        </div>
         <div style={{ display: "flex", alignItems: "center" }}>
           <span style={{ marginRight: "5px" }}>{">"}</span>
           <input
@@ -232,21 +285,23 @@ const submitToSupabase = async username => {
         )}
 
         {showLinks && (
-          <div className='links' style={{ marginTop: "20px" }}>
-            <div style={{ marginBottom: "10px", fontSize: "24px" }}>Welcome to the waitlist! Join our community:</div>
-            <div>
+          <div className='links' style={{ marginTop: "15px" }}> {/* Reduced margin */}
+            <div style={{ marginBottom: "8px", fontSize: "16px" }}> {/* Smaller welcome text */}
+              Welcome to the waitlist! Join our community:
+            </div>
+            <div style={{ fontSize: "14px", marginBottom: "5px" }}> {/* Smaller link text */}
               Twitter:{" "}
               <a href='https://x.com/_BlockRooms' target='_blank' rel='noopener noreferrer'>
                 https://x.com/_BlockRooms
               </a>
             </div>
-            <div>
+            <div style={{ fontSize: "14px", marginBottom: "8px" }}> {/* Smaller link text */}
               Discord:{" "}
               <a href='https://discord.com/invite/jcpgh3KS3z' target='_blank' rel='noopener noreferrer'>
                 https://discord.com/invite/jcpgh3KS3z
               </a>
             </div>
-            <div style={{ marginTop: "15px", fontSize: "18px", opacity: "0.7" }}>
+            <div style={{ marginTop: "10px", fontSize: "12px", opacity: "0.7" }}> {/* Smaller footer text */}
               You'll receive updates via Discord. Keep an eye on your DMs!
             </div>
           </div>
