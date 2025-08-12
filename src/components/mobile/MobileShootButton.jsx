@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import gunImage from "/shott.png";
 
 function MobileShootButton({ onShoot, isVisible }) {
   const [isPressed, setIsPressed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleStart = e => {
     e.preventDefault();
@@ -27,14 +37,18 @@ function MobileShootButton({ onShoot, isVisible }) {
 
   if (!isVisible) return null;
 
+  // Responsive sizes
+  const size = isMobile ? 60 : 90;
+  const imageSize = isMobile ? "60%" : "70%";
+
   return (
     <div
       style={{
         position: "fixed",
-        bottom: "40px",
-        right: "40px",
-        width: "90px",
-        height: "90px",
+        bottom: isMobile ? "20px" : "40px",
+        right: isMobile ? "20px" : "40px",
+        width: `${size}px`,
+        height: `${size}px`,
         borderRadius: "50%",
         backgroundColor: isPressed ? "#d8ca05ff" : "#ddd",
         border: "3px solid #fff",
@@ -62,8 +76,8 @@ function MobileShootButton({ onShoot, isVisible }) {
         src={gunImage}
         alt='Shoot'
         style={{
-          width: "70%",
-          height: "70%",
+          width: imageSize,
+          height: imageSize,
           objectFit: "contain",
           pointerEvents: "none",
           filter: "brightness(0) invert(1)",
