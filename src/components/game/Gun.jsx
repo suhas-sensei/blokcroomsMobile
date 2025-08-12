@@ -96,7 +96,7 @@ function Gun({ isVisible = true, onShoot }) {
     };
   }, [isVisible]);
 
-  // FIXED: Shoot function with NO blocking - can always shoot
+  // Shoot function - can always shoot
   const shoot = () => {
     console.log("🔫 SHOOTING - No blocks, always fires!");
 
