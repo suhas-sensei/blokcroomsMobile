@@ -18,8 +18,7 @@ function Join() {
 
 // Function to send data to Supabase
 const submitToSupabase = async username => {
-  console.log("ENV URL:", import.meta.env.VITE_SUPABASE_URL);
-  console.log("ENV KEY:", import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 30) + "...");
+  
   
   // Try a simple test
   const { data, error } = await supabase.from('waitlist').select('count');
