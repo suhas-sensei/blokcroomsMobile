@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { isMobile } from "../../utils/device";
 
 function WarningDialog({ onAccept }) {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("Loading assets...");
   const [isLoaded, setIsLoaded] = useState(false);
+  const mobile = isMobile();
 
   useEffect(() => {
     // Simplified loading - just simulate progress
@@ -46,6 +48,7 @@ function WarningDialog({ onAccept }) {
 
   return (
     <div
+      onClick={mobile && isLoaded ? handleClick : undefined}
       style={{
         position: "fixed",
         top: 0,
@@ -57,6 +60,7 @@ function WarningDialog({ onAccept }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        cursor: mobile && isLoaded ? "pointer" : "default",
       }}
     >
       <div
@@ -181,10 +185,30 @@ function WarningDialog({ onAccept }) {
             </div>
           )}
 
+          {/* Mobile tap instruction - Only show on mobile when loaded */}
+          {mobile && isLoaded && (
+            <div
+              style={{
+                fontSize: "14px",
+                marginBottom: "10px",
+                textAlign: "center",
+                color: "#333",
+                fontStyle: "italic",
+              }}
+            >
+              Press anywhere to play
+            </div>
+          )}
+
           {/* OK Button */}
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
-              onClick={handleClick}
+              onClick={(e) => {
+                if (mobile) {
+                  e.stopPropagation(); // Prevent triggering the overlay click
+                }
+                handleClick();
+              }}
               style={{
                 width: "100px",
                 height: "30px",
