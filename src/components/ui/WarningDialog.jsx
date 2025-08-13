@@ -88,7 +88,7 @@ function WarningDialog({ onAccept }) {
         {/* Content Area */}
         <div
           style={{
-            padding: "20px",
+            padding: "5px 20px 2px 20px",
             height: "300px",
             display: "flex",
             flexDirection: "column",
@@ -99,9 +99,9 @@ function WarningDialog({ onAccept }) {
         >
           <div
             style={{
-              fontSize: "15px",
+              fontSize: "17px",
               marginBottom: "20px",
-              lineHeight: "1.4",
+              lineHeight: "0.5",
             }}
           >
             This is just a waitlist site and not the actual gameplay.
@@ -162,11 +162,11 @@ function WarningDialog({ onAccept }) {
                 textAlign: "left",
                 width: "100%",
                 backgroundColor: "#f0f0f0",
-                padding: "10px",
+                padding: "2px 20px 1px 5px",
                 border: "1px inset #c0c0c0",
               }}
             >
-              <div style={{ fontWeight: "bold", marginBottom: "8px", textAlign: "center" }}>
+              <div style={{ fontWeight: "bold", marginBottom: "2px", textAlign: "center" }}>
                 🎮 Quick Tutorial
               </div>
               <div style={{ marginBottom: "5px" }}>
