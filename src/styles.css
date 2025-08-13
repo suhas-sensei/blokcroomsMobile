@@ -1,4 +1,21 @@
 /* Additional responsive mobile UI controls - Add this to your existing styles.css */
+/* --- Force-hide ALL scrollbars everywhere (desktop + mobile) --- */
+html, body, #root {
+  overflow: hidden !important;      /* no scroll area */
+}
+
+* {
+  -ms-overflow-style: none !important;  /* IE/Edge legacy */
+  scrollbar-width: none !important;     /* Firefox */
+  overscroll-behavior: none !important; /* stop elastic/bounce */
+}
+
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;            /* Chrome/Safari/Opera */
+}
+
 
 /* Enhanced mobile controls responsiveness */
 @media screen and (max-width: 480px) {

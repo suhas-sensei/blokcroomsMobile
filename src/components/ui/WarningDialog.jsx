@@ -180,7 +180,7 @@ function WarningDialog({ onAccept }) {
                 <strong>Controls:</strong> WASD/Arrows to move, Mouse to look, Click to shoot
               </div>
               <div style={{ fontSize: "11px", color: "#666", fontStyle: "italic" }}>
-                Entity spawns in 3 seconds. Music gets louder as it approaches!
+                Entity spawns in 3 seconds. Please Rotate your Phone for the best experience.
               </div>
             </div>
           )}
