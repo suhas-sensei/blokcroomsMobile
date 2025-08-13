@@ -1,183 +1,64 @@
-/* Prevent mobile browser zoom and selection */
-* {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+/* Additional responsive mobile UI controls - Add this to your existing styles.css */
+
+/* Enhanced mobile controls responsiveness */
+@media screen and (max-width: 480px) {
+  /* Extra small mobile devices */
+  div[style*="position: fixed"][style*="bottom:"] {
+    bottom: max(8px, calc(8px + env(safe-area-inset-bottom))) !important;
+  }
+  
+  div[style*="position: fixed"][style*="right:"] {
+    right: max(8px, calc(8px + env(safe-area-inset-right))) !important;
+  }
+  
+  div[style*="position: fixed"][style*="left:"] {
+    left: max(8px, calc(8px + env(safe-area-inset-left))) !important;
+  }
 }
 
-/* Prevent zoom on double tap */
-body {
-  touch-action: manipulation;
-  -webkit-touch-callout: none;
-  -webkit-text-size-adjust: none;
-  -webkit-user-select: none;
-  user-select: none;
+@media screen and (max-width: 375px) {
+  /* Very small mobile devices (iPhone SE, etc.) */
+  div[style*="position: fixed"][style*="bottom:"] {
+    bottom: max(5px, calc(5px + env(safe-area-inset-bottom))) !important;
+  }
+  
+  div[style*="position: fixed"][style*="right:"] {
+    right: max(5px, calc(5px + env(safe-area-inset-right))) !important;
+  }
 }
 
-/* Prevent iOS Safari bounce and zoom + Fullscreen support */
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh; 
-  overflow: hidden;
-  background: black;
-  position: fixed; /* Prevent any scrolling */
+@media screen and (max-height: 600px) {
+  /* Short screens - reduce UI element sizes */
+  div[style*="borderRadius: 50%"] {
+    transform: scale(0.8) !important;
+  }
 }
 
-/* Enhanced mobile support */
+/* Prevent mobile UI from interfering with game canvas */
+.mobile-ui-element {
+  pointer-events: auto !important;
+  z-index: 1000 !important;
+  touch-action: none !important;
+}
+
+/* Ensure mobile controls are always above game content */
 @media screen and (max-width: 768px) {
-  html, body {
-    height: 100vh;
-    height: -webkit-fill-available; /* Safari mobile */
-    height: 100dvh; /* Dynamic viewport height */
+  div[style*="zIndex: 1000"] {
+    z-index: 1001 !important;
   }
   
-  body {
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    min-height: 100dvh;
+  /* Prevent accidental selections on mobile controls */
+  div[style*="position: fixed"] * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
   }
 }
 
-/* Landscape orientation prompt for mobile */
-@media screen and (orientation: portrait) and (max-width: 768px) {
-  body::before {
-    content: "🔄 Please rotate your device to landscape mode for the best experience";
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.95);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    z-index: 99999;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    max-width: 80%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-    border: 2px solid #333;
+/* Landscape mode optimizations for mobile */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  /* Compact landscape mode - smaller controls */
+  div[style*="position: fixed"][style*="borderRadius: 50%"] {
+    transform: scale(0.75) !important;
   }
-}
-
-/* Prevent zoom on input focus (if any) */
-input,
-textarea,
-select {
-  font-size: 16px !important;
-  -webkit-user-select: text;
-  user-select: text;
-  -webkit-appearance: none; /* Remove iOS styling */
-  border-radius: 0; /* Remove iOS rounded corners */
-}
-
-/* Game canvas specific */
-canvas {
-  touch-action: none;
-  -webkit-touch-callout: none;
-  display: block;
-  position: fixed !important; /* Force fixed positioning */
-  top: 0 !important; 
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important; /* Dynamic viewport height */
-  z-index: 1; /* Ensure canvas is behind UI elements */
-}
-
-/* Fullscreen mode optimizations */
-:fullscreen {
-  width: 100vw !important;
-  height: 100vh !important;
-}
-
-:-webkit-full-screen {
-  width: 100vw !important;
-  height: 100vh !important;
-}
-
-:-moz-full-screen {
-  width: 100vw !important;
-  height: 100vh !important;
-}
-
-:-ms-fullscreen {
-  width: 100vw !important;
-  height: 100vh !important;
-}
-
-/* PWA and mobile app styles */
-@media (display-mode: fullscreen) {
-  body {
-    background: black;
-  }
-}
-
-@media (display-mode: standalone) {
-  body {
-    background: black;
-  }
-}
-
-/* Safe area handling for devices with notches */
-@supports (padding: max(0px)) {
-  body {
-    padding-left: max(0px, env(safe-area-inset-left));
-    padding-right: max(0px, env(safe-area-inset-right));
-    padding-top: max(0px, env(safe-area-inset-top));
-    padding-bottom: max(0px, env(safe-area-inset-bottom));
-  }
-}
-
-/* Mobile UI elements positioning */
-@media screen and (max-width: 768px) {
-  /* Ensure mobile controls are above canvas */
-  div[style*="position: fixed"] {
-    z-index: 1000 !important;
-  }
-  
-  /* Mobile joystick and button positioning */
-  div[style*="bottom:"] {
-    bottom: max(40px, calc(40px + env(safe-area-inset-bottom))) !important;
-  }
-  
-  div[style*="right:"] {
-    right: max(40px, calc(40px + env(safe-area-inset-right))) !important;
-  }
-  
-  div[style*="left:"] {
-    left: max(40px, calc(40px + env(safe-area-inset-left))) !important;
-  }
-}
-
-/* Hide scrollbars */
-::-webkit-scrollbar {
-  display: none;
-}
-
-html {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-/* Prevent text selection during gameplay */
-.game-active {
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-  user-select: none !important;
-}
-
-/* Loading and dialog positioning */
-div[style*="position: fixed"][style*="z-index"] {
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
 }

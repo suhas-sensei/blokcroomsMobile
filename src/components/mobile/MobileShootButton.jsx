@@ -3,11 +3,17 @@ import gunImage from "/shott.png";
 
 function MobileShootButton({ onShoot, isVisible }) {
   const [isPressed, setIsPressed] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [screenSize, setScreenSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      setScreenSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
     };
 
     window.addEventListener("resize", handleResize);
@@ -37,21 +43,45 @@ function MobileShootButton({ onShoot, isVisible }) {
 
   if (!isVisible) return null;
 
-  // Responsive sizes
-  const size = isMobile ? 60 : 90;
-  const imageSize = isMobile ? "60%" : "70%";
+  // Responsive sizing based on screen dimensions
+  const getResponsiveSize = () => {
+    const minDimension = Math.min(screenSize.width, screenSize.height);
+    
+    // Base size on smaller screen dimension, with limits
+    let size = Math.max(40, Math.min(70, minDimension * 0.08));
+    
+    // Additional adjustments for very small screens
+    if (screenSize.width < 375) {
+      size = Math.min(size, 45);
+    }
+    
+    return size;
+  };
+
+  const size = getResponsiveSize();
+  const imageSize = "65%";
+
+  // Responsive positioning
+  const getPosition = () => {
+    const padding = Math.max(10, size * 0.3);
+    return {
+      bottom: `${padding}px`,
+      right: `${padding}px`,
+    };
+  };
+
+  const position = getPosition();
 
   return (
     <div
       style={{
         position: "fixed",
-        bottom: isMobile ? "20px" : "40px",
-        right: isMobile ? "20px" : "40px",
+        ...position,
         width: `${size}px`,
         height: `${size}px`,
         borderRadius: "50%",
         backgroundColor: isPressed ? "#d8ca05ff" : "#ddd",
-        border: "3px solid #fff",
+        border: `${Math.max(2, size * 0.04)}px solid #fff`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -61,8 +91,8 @@ function MobileShootButton({ onShoot, isVisible }) {
         transform: isPressed ? "scale(0.9)" : "scale(1)",
         transition: "all 0.05s ease",
         boxShadow: isPressed
-          ? "0 0 16px rgba(255, 215, 0, 0.8)" // yellow glow
-          : "0 4px 12px rgba(0,0,0,0.3)",
+          ? "0 0 16px rgba(255, 215, 0, 0.8)"
+          : `0 ${size * 0.08}px ${size * 0.2}px rgba(0,0,0,0.3)`,
         cursor: "pointer",
       }}
       onTouchStart={handleStart}
