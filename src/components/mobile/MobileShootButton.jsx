@@ -48,11 +48,11 @@ function MobileShootButton({ onShoot, isVisible }) {
     const minDimension = Math.min(screenSize.width, screenSize.height);
     
     // Base size on smaller screen dimension, with limits
-    let size = Math.max(40, Math.min(70, minDimension * 0.08));
+    let size = Math.max(40, Math.min(70, minDimension * 0.2));
     
     // Additional adjustments for very small screens
     if (screenSize.width < 375) {
-      size = Math.min(size, 45);
+      size = Math.min(size, 60);
     }
     
     return size;
